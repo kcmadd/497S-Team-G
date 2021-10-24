@@ -5,6 +5,8 @@ FROM python
 RUN pip install pdm
 RUN pip install uvicorn
 RUN pip install fastapi
+RUN pip install cryptography
+
 # Create the directory inside the container for the app
 WORKDIR /usr/src/app
 

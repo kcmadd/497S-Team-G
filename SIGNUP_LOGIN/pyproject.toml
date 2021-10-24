@@ -1,0 +1,32 @@
+[project]
+name = "python_api_server_1"
+version = "1.0"
+description = "A simple API server"
+authors = [
+    {name = "Kalyan Maddineni", email = "smaddineni@umass.edu"},
+]
+dependencies = [
+    "fastapi~=0.68",
+    "uvicorn~=0.15",
+]
+requires-python = ">=3.9"
+dynamic = ["classifiers"]
+license = {text = "MIT"}
+
+[project.urls]
+homepage = ""
+
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+
+[tool.pdm.scripts]
+start_server = "uvicorn main:app --host 0.0.0.0 --port 5000 --reload"
+docker_build = "docker build -t python_server_1 ."
+docker_build_dev = "docker build -t python_server_1_dev -f Dockerfile_dev ."
+docker_run = "docker run -d --rm --name my_python_server_1 -p 5000:5000 python_server_1"
+docker_run_dev = "./bin/run_dev.sh"
+docker_stop = "docker stop my_python_server_1"
