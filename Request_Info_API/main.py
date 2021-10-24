@@ -2,6 +2,11 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
+
+class user(BaseModel):
+    user_name: str
+    phone_number: str
 
 userInfo = [{
     "user_id": 1,
@@ -48,10 +53,11 @@ def get_info(postId : str):
         return JSONResponse(status_code=404, content={"message" : "Post Doesnot Exist in the database."})
 
 @app.post('/posts/{postId}')
-def send_info(userName : str, contactInfo : str):
+def send_info(postId: str, subletterInfo : user):
+    json_userInfo = jsonable_encoder(subletterInfo)
     if postId in idToOwnerInfo:
-        messages[idToOwnerInfo[postId]['user_id']] = [userName, contactInfo, postId]   #Pass the user info.
-        return JSONResponse(status_code=200)
+        messages[idToOwnerInfo[postId]['user_id']] = json_userInfo   #Pass the user info.
+        return JSONResponse(status_code=200, content={"message" : "Message sent"})
     else:
         return JSONResponse(status_code=404, content={"message" : "Could not notify the owner since the post doesnot exist."})
 
