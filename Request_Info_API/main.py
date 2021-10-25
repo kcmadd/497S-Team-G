@@ -45,7 +45,7 @@ messages = {
 
 app = FastAPI()
 
-@app.get('/posts/{postId}')
+@app.get('/posts/{postId}', status_code=200)
 def get_info(postId : str):
     if postId in idToOwnerInfo:
         return idToOwnerInfo[postId]['details']
