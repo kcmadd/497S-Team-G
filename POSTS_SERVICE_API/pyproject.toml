@@ -1,7 +1,7 @@
 [project]
-name = ""
+name = "POSTS_SERVICE_API"
 version = ""
-description = ""
+description = "Microservice for creating posts"
 authors = [
     {name = "Janvi Tanniru", email = "jtanniru@umass.edu"},
 ]
