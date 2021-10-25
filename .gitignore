@@ -1,2 +1,14 @@
 POSTS_SERVICE_API/__pycache__
 POSTS_SERVICE_API/__pypackages__
+
+Query_Service/__pycache__
+Query_Service/__pypackages__
+
+View_Posts_Service/__pycache__
+View_Posts_Service/__pypackages__
+
+Request_Info_API/__pycache__
+Request_Info_API/__pypackages__
+
+SIGNUP_LOGIN/__pycache__
+SIGNUP_LOGIN/__pypackages__
