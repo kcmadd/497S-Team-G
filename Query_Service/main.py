@@ -22,7 +22,7 @@ app = FastAPI()
 posts = []
 user_info = []
 
-@app.get('/location_filter/{location}')
+@app.get('/location_filter/{location}', status_code=200)
 def filter_by_location(location: str):
     post_by_loc = []
     for i in range(len(posts)):
@@ -48,15 +48,4 @@ async def mark_interested(post: Post):
         "interested_users": interested_users
     }
     posts.append(posting)
-    return JSONResponse(status_code=201, message="The post has been marked interested")
-
-
-@app.get('/')
-def redirect():
-    # obj = db.query(ShortenedUrl).filter_by(short_link = short_link).first()
-    if posts is None:
-        raise HTTPException(
-            status_code=404,
-            detail='No postings available'
-        )
-    return RedirectResponse(url=posts)
+    return JSONResponse(status_code=201, content="The post has been marked interested")
