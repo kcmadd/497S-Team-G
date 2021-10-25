@@ -10,7 +10,6 @@ from fastapi.encoders import jsonable_encoder
 
 
 class Post(BaseModel):
-    #pid: str
     description: str
     num_rooms_available: int
     price: float
@@ -34,7 +33,6 @@ async def post_info(post: Post):
 async def get_post(postid : str):
     for i in range(len(posts)):
         post_json = jsonable_encoder(posts[i])
-        #posting = [l[postid] for l in posts]
         if post_json['pid'] == postid:
             post = post_json
         else:
