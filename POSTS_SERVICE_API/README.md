@@ -34,7 +34,7 @@ The post creation microservice allows users to put their places up as a listing.
         },...]
         ```
     * **Status_Code:** 
-        * 201 when a posting is successfully created 
+        * 201 - when a posting is successfully created 
 
 
       
@@ -42,7 +42,7 @@ The post creation microservice allows users to put their places up as a listing.
     * **Route:** /viewpost/{postid}
     * **Description:** This endpoint to view a particular post based on postid 
     * **Status_Code:** 
-        * 200 when a response is successfull
-        * 404 When a response is unsuccessful
+        * 200 - when a response is successfull
+        * 404 - when a response is unsuccessful
 
 
