@@ -57,7 +57,7 @@ def login(username: str=Body(...), password: str=Body(...)):
     else:
         print("\n\033[91mUser does not exist\033[0m\n")
 
-
+#Tempory endpoint to view all user accounts until we get a DB
 @app.get('/userdata')
 def get_users():
     return users
