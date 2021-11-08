@@ -64,5 +64,6 @@ async def get_post(postid : str):
 @app.post('/events', status_code = 200)
 async def send_status(event: dict = Body(...) ):
     print("Recieved Event", event.type)
-    return JSONResponse(status_code = 200, content="Post created successfully")
+    return {}
+    #return JSONResponse(status_code = 200, content="Post created successfully")
     
