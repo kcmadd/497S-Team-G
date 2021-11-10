@@ -37,12 +37,12 @@ async def post_info(post: Post):
     data = {"pid":id, "posting":post}
     posts.append(data)
     event = {
-        event_type: "Post_Created",
-        data: data
+        "type": "Post_Created",
+        "data": data
     }
     await requests.post("http://localhost:5005/events", event)
     return posts
-#JSONResponse(status_code = 201, content="Post created successfully")
+
 
 # This endpoint to view a particular post based on postid 
 @app.get('/viewpost/{postid}', status_code= 200)
@@ -62,8 +62,7 @@ async def get_post(postid : str):
     return post
 
 @app.post('/events', status_code = 200)
-async def send_status(event: dict = Body(...) ):
-    print("Recieved Event", event.type)
+async def send_status(event: dict = Body(...)):
+    print("Recieved Event")
     return {}
-    #return JSONResponse(status_code = 200, content="Post created successfully")
     

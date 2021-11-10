@@ -4,11 +4,10 @@ import hashlib
 import base64
 import random
 from pydantic import HttpUrl, BaseModel
-from fastapi import FastAPI, Depends, Body, HTTPException
+from fastapi import FastAPI, Depends, Body, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 import requests
-
 
 app = FastAPI()
 
@@ -19,4 +18,4 @@ async def event_bus(event: dict = Body(...)):
     requests.post("http://localhost:5002/events", event)
     requests.post("http://localhost:5003/events", event)
     requests.post("http://localhost:5004/events", event)
-    return JSONResponse(status_code = 200, content="event created successfully")
+    return JSONResponse(status_code = 200, content={"message":"event created successfully"})
