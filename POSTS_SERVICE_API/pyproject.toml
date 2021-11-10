@@ -5,7 +5,9 @@ description = "Microservice for creating posts"
 authors = [
     {name = "Janvi Tanniru", email = "jtanniru@umass.edu"},
 ]
-dependencies = []
+dependencies = [
+    "requests~=2.26",
+]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
 license = {text = "MIT"}
