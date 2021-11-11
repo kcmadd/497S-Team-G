@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "uvicorn~=0.15",
     "fastapi~=0.70",
+    "requests~=2.26",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -29,5 +30,5 @@ docker_build = "docker build -t query_service ."
 docker_build_dev = "docker build -t query_service_dev -f Dockerfile_dev ."
 docker_run = "docker run -d --rm --name my_query_service -p 5003:5003 query_service"
 docker_run_dev = "./bin/run_dev.sh"
-docker_stop = "docker stop query_service"
-docker_stop_dev = "docker stop query_service_dev"
+docker_stop = "docker stop my_query_service"
+docker_stop_dev = "docker stop my_query_service_dev"
