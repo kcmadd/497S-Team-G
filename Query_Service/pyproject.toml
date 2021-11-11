@@ -6,9 +6,12 @@ authors = [
     {name = "Aditya Narayanan", email = "arnarayanan@umass.edu"},
 ]
 dependencies = [
-    "uvicorn~=0.15",
     "fastapi~=0.70",
+    "uvicorn~=0.15",
     "requests~=2.26",
+    "pymongo~=3.12",
+    "motor~=2.5",
+    "bson~=0.5",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
