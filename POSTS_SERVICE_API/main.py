@@ -36,7 +36,6 @@ client = AsyncClient()
 
 posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “location” : { “street_address” : str “city”: str, “state”: str, “country”: str}}}
 
-
 def create_postid():
     random_number = str(hex(random.randint(1000,9999)))
     print(random_number)
@@ -55,11 +54,7 @@ async def post_info(post: Post):
     
     async with httpx.AsyncClient() as client:
         await client.post("http://localhost:5005/events", json=event)
-    #requests.post('http://localhost:5005/events', json=event)
-    # await client.post("http://localhost:5005/events", {
-    #     "type": "Post_Created",
-    #     "data": data
-    # })
+
     return data
 
 # This endpoint to view a particular post based on postid 
