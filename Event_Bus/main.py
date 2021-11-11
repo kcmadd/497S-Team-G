@@ -12,7 +12,7 @@ import requests
 app = FastAPI()
 
 @app.post('/events', status_code=200)
-async def event_bus(event: dict = Body(...)):
+def event_bus(event: dict = Body(...)):
     requests.post("http://localhost:5000/events", event)
     requests.post("http://localhost:5001/events", event)
     requests.post("http://localhost:5002/events", event)

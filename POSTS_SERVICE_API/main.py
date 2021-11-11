@@ -6,6 +6,8 @@ import requests
 from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 import random
+import httpx
+from httpx import AsyncClient
 from fastapi.encoders import jsonable_encoder
 
 # posting data content schema
@@ -21,6 +23,7 @@ class Post(BaseModel):
     country: str # look into converting the location fields to json in the BaseModel
     
 app = FastAPI()
+client = AsyncClient()
 
 posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “location” : { “street_address” : str “city”: str, “state”: str, “country”: str}}}
 
@@ -37,12 +40,16 @@ async def post_info(post: Post):
     data = {"pid":id, "posting":post}
     posts.append(data)
     event = {
-        "type": "Post_Created",
-        "data": data
-    }
-    await requests.post("http://localhost:5005/events", event)
+            "type": "Post_Created",
+            "data": data
+        }
+    async with httpx.AsyncClient() as client:
+        await client.post("http://localhost:5005/events", data=event)
+    # await client.post("http://localhost:5005/events", {
+    #     "type": "Post_Created",
+    #     "data": data
+    # })
     return posts
-
 
 # This endpoint to view a particular post based on postid 
 @app.get('/viewpost/{postid}', status_code= 200)

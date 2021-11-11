@@ -6,6 +6,8 @@ RUN pip install pdm
 RUN pip install uvicorn
 RUN pip install fastapi
 RUN pip install requests
+RUN pip install httpx
+RUN pip install asyncio
 
 # Create the directory inside the container for the app
 WORKDIR /usr/src/app
