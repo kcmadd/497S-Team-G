@@ -12,3 +12,6 @@ Request_Info_API/__pypackages__
 
 SIGNUP_LOGIN/__pycache__
 SIGNUP_LOGIN/__pypackages__
+
+Event_Bus/__pycache__
+Event_Bus/__pypackages__
