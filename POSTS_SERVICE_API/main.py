@@ -9,6 +9,7 @@ import random
 import httpx
 from httpx import AsyncClient
 from fastapi.encoders import jsonable_encoder
+import json
 
 # posting data content schema
 class Post(BaseModel):
@@ -21,7 +22,15 @@ class Post(BaseModel):
     city: str
     state: str
     country: str # look into converting the location fields to json in the BaseModel
-    
+
+class Data(BaseModel):
+    pid: str
+    posting: Post
+
+class Event(BaseModel):
+    type: str
+    data: Data
+
 app = FastAPI()
 client = AsyncClient()
 
@@ -37,19 +46,21 @@ def create_postid():
 @app.post('/createpost', status_code = 201)
 async def post_info(post: Post):
     id = create_postid()
-    data = {"pid":id, "posting":post}
+    data = {"pid":id, "posting":jsonable_encoder(post)}
     posts.append(data)
     event = {
             "type": "Post_Created",
             "data": data
         }
+    
     async with httpx.AsyncClient() as client:
-        await client.post("http://localhost:5005/events", data=event)
+        await client.post("http://localhost:5005/events", json=event)
+    #requests.post('http://localhost:5005/events', json=event)
     # await client.post("http://localhost:5005/events", {
     #     "type": "Post_Created",
     #     "data": data
     # })
-    return posts
+    return data
 
 # This endpoint to view a particular post based on postid 
 @app.get('/viewpost/{postid}', status_code= 200)
@@ -69,7 +80,7 @@ async def get_post(postid : str):
     return post
 
 @app.post('/events', status_code = 200)
-async def send_status(event: dict = Body(...)):
-    print("Recieved Event")
-    return {}
+async def send_status(event: Event):
+    print("Recieved Event", event)
+    return {"message": "received"}
     
