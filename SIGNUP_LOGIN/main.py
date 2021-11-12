@@ -8,7 +8,8 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from cryptography.fernet import Fernet
 
 app = FastAPI()
-users = []
+users_pass = []
+users_data = []
 user_map = {} #for user lookup
 
 #for encrypting strings
@@ -34,15 +35,16 @@ def account(username: str):
 
 #endpoint for signing up
 @app.post('/signup')
-def signup(username: str=Body(...), password: str=Body(...)):
+def signup(username: str=Body(...), password: str=Body(...), fname: str=Body(...), lname: str=Body(...), phone: str=Body(...)):
     encrypted_password = encrypt_password(password)
     if(username in user_map.keys()):
         print("\n\033[91mUser already taken\033[0m\n")
     else:
-        users.append({'username': username, 'encrypted_password': encrypted_password})
+        users_pass.append({'email': username, 'encrypted_password': encrypted_password})
+        users_data.append({'email': username, 'fname': fname, 'lname': lname, 'phone': phone})
         user_map[username] = encrypted_password
         account(username)
-    return users
+    return users_pass
 
 #endpoint for logging in
 @app.get('/login')
@@ -60,4 +62,9 @@ def login(username: str=Body(...), password: str=Body(...)):
 #Tempory endpoint to view all user accounts until we get a DB
 @app.get('/userdata')
 def get_users():
-    return users
+    return users_data
+
+#Tempory endpoint to view all user accounts until we get a DB
+@app.get('/userpass')
+def get_users():
+    return users_pass
