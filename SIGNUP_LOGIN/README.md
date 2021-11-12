@@ -1,4 +1,4 @@
-# Query Service
+# Signup and Login Service
 
 ### Developer
 
@@ -31,8 +31,8 @@ The goal of this microservice is to allow users to signup and login to their acc
     "username": str,
     "password": {
     "fname": str,
-    "lname": int,
-    "phone": float,
+    "lname": str,
+    "phone": str,
     },
 ]
 ```
