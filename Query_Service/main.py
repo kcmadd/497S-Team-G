@@ -8,9 +8,8 @@ from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 import requests
-import motor.motor_asyncio
-from bson import ObjectId
-import pymongo
+#import motor.motor_asyncio
+#from bson import ObjectId
 from pymongo import MongoClient
 import os
 
