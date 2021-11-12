@@ -22,3 +22,6 @@ SIGNUP_LOGIN/.DS_Store
 Database_Service/.env
 
 .DS_Store
+
+Event_Bus/__pycache__
+Event_Bus/__pypackages__
