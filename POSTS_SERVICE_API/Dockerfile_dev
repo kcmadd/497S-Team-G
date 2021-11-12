@@ -16,4 +16,4 @@ WORKDIR /usr/src/app
 EXPOSE 5000
 
 # the command that starts our app
-CMD ["pdm", "run", "start_server"]
+CMD pdm install; pdm run start_server
