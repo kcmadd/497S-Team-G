@@ -3,10 +3,19 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
+import requests
 
 class user(BaseModel):
-    user_name: str
-    phone_number: str
+    uid: str
+    fname: str
+    lname: str
+    email: str 
+    phone: str
+    # user_name: str
+    # phone_number: str
+
+class user_id(BaseModel):
+    uid: str
 
 userInfo = [{
     "user_id": 1,
@@ -52,13 +61,32 @@ def get_info(postId : str):
     else:
         return JSONResponse(status_code=404, content={"message" : "Post Doesnot Exist in the database."})
 
-@app.post('/posts/{postId}')
-def send_info(postId: str, subletterInfo : user):
+@app.post('/posts/{postId}', status_code=200)
+async def send_info(postId: str, subletterInfo : user):
     json_userInfo = jsonable_encoder(subletterInfo)
+    json_userInfo["postId"] = postId
     if postId in idToOwnerInfo:
+        data = json_userInfo
+        event = {
+            'type': 'Mark_Interested',
+            'data': data
+        }
+        await requests.post("http://localhost:5005/events", event)
         messages[idToOwnerInfo[postId]['user_id']] = json_userInfo   #Pass the user info.
-        return JSONResponse(status_code=200, content={"message" : "Message sent"})
+        return data
     else:
         return JSONResponse(status_code=404, content={"message" : "Could not notify the owner since the post doesnot exist."})
+
+@app.post('/posts/{postId}/NoLongerInterested', status_code=200)
+async def mark_not_interested(postId: str, userId: user_id):
+    json_userInfo = jsonable_encoder(userId)
+    json_userInfo["postId"] = postId
+    event = {
+        'type': 'Mark_Not_Interested',
+        'data': json_userInfo
+    }
+    await requests.post("http://localhost:5005/events", event)
+    return "Marked Not Interested."
+
 
 
