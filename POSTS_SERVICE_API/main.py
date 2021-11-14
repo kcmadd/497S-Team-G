@@ -7,6 +7,7 @@ from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 import random
 import httpx
+import aiohttp
 from httpx import AsyncClient
 from fastapi.encoders import jsonable_encoder
 import json
@@ -52,8 +53,11 @@ async def post_info(post: Post):
             "data": data
         }
     
-    async with httpx.AsyncClient() as client:
-        await client.post("http://localhost:5005/events", json=event)
+    #async with httpx.AsyncClient() as client:
+        #await client.post("http://localhost:5005/events", json=event)
+    async with aiohttp.ClientSession() as session:
+        await session.post("http://0.0.0.0:5005/events", json=event)
+    #httpx.post("http://localhost:5005/events", json=event)
 
     return event
 

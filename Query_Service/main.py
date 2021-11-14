@@ -25,6 +25,7 @@ class Post(BaseModel):
     city: str
     state: str
     country: str # look into converting the location fields to json in the BaseModel
+    interested_users: list
 
 class Data(BaseModel):
     pid: str
@@ -51,21 +52,36 @@ post_collection = db1.post_collection
 user_collection = db2.user_collection
 
 print(post_collection)
+posts = []
+@app.post("/events", status_code=200)
+async def run_ops(body: dict = Body(...)):
+    database(body)
+    #print("finished")
 
 async def database(body):
     #post = jsonable_encoder(student)
     print (body)
     if body["type"] == "Post_Created":
         print("insert to db")
-        new_post = post_collection.insert_one(body["data"])
+        posts.append(body["data"])
+       # new_post = post_collection.insert_one(body["data"])
         print("finished")
         #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
         return JSONResponse(status_code=200, content={"item": "posted"})
     
     if body["type"] == "User_Created":
         new_user = await user_collection.insert_one(body)
-        created_user = user_collection.find_one({"_id": body.inserted_id})
-        return JSONResponse(status_code=200, content=created_user)
+        #created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'message': 'received'})
+
+    # update based on mongo syntax
+    if body["type"] == "Mark_Interested":
+        currPostId = body["data"]["postId"]
+        if body["data"]["postId"] in posts:
+            posts[currPostId]["interested_users"].append(body["data"]["uid"])
+        #update_post = await post_collection.insert_one(body)
+       # created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'message': 'received'})
 
 @app.post("/events", status_code=200)
 async def run_ops(body: dict = Body(...)):
