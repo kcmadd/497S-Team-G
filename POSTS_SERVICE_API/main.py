@@ -1,93 +1,81 @@
 from typing import Optional
 from fastapi import FastAPI
-import hashlib
-import base64
-from pydantic import HttpUrl
+from pydantic import BaseModel
+import asyncio
+import requests
 from fastapi import FastAPI, Depends, Body, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
+import random
+import httpx
+from httpx import AsyncClient
+from fastapi.encoders import jsonable_encoder
+import json
+
+# posting data content schema
+class Post(BaseModel):
+    amenities: str
+    num_rooms_available: int
+    price: float
+    restrictions: str
+    lease_duration: str 
+    street_address: str
+    city: str
+    state: str
+    country: str # look into converting the location fields to json in the BaseModel
+
+class Data(BaseModel):
+    pid: str
+    posting: Post
+
+class Event(BaseModel):
+    type: str
+    data: Data
 
 app = FastAPI()
-links = [] # [{"sl": x, "ou":x}, ...]
-def create_short_link(original_url: str):
-    to_encode = f'{original_url}'
+client = AsyncClient()
 
-    b64_encoded_str = base64.urlsafe_b64encode(
-        hashlib.sha256(to_encode.encode()).digest()).decode()
-    return b64_encoded_str[:7]
+posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “location” : { “street_address” : str “city”: str, “state”: str, “country”: str}}}
 
-@app.post('/link/shorten')
-def get_short_link(url: HttpUrl = Body(..., embed=True)):
-    short_link = create_short_link(url)
-    links.append({'short_link': short_link, 'original_url': url})
-    return links
+def create_postid():
+    random_number = str(hex(random.randint(1000,9999)))
+    print(random_number)
+    return random_number
+ 
+# This endpoint for a sublessor to create a posting for a lease 
+@app.post('/createpost', status_code = 201)
+async def post_info(post: Post):
+    id = create_postid()
+    data = {"pid":id, "posting":jsonable_encoder(post)}
+    posts.append(data)
+    event = {
+            "type": "Post_Created",
+            "data": data
+        }
+    
+    async with httpx.AsyncClient() as client:
+        await client.post("http://localhost:5005/events", json=event)
 
-@app.get('/{short_link}')
-def redirect(short_link: str):
-    # obj = db.query(ShortenedUrl).filter_by(short_link = short_link).first()
-    short_links = [l["short_link"] for l in links]
-    original_urls = [l["original_url"] for l in links]
-    for i in range(len(short_links)):
-        if short_links[i] == short_link:
-            obj = {"short_link": short_links[i], "original_url": original_urls[i]}
-            break
-    if obj is None:
+    return event
+
+# This endpoint to view a particular post based on postid 
+@app.get('/viewpost/{postid}', status_code= 200)
+async def get_post(postid : str):
+    for i in range(len(posts)):
+        post_json = jsonable_encoder(posts[i])
+        if post_json['pid'] == postid:
+            post = post_json
+        else:
+            post = None
+     
+    if post is None:
         raise HTTPException(
-            status_code=404,
-            detail='The link does not exist, could not redirect.'
+            status_code = 404,
+            detail='post does not exist'
         )
-    return RedirectResponse(url=obj["original_url"])
+    return post
 
-# Fix mapping for html/json request
-mapped_links = []
-@app.get('/mapping/json')
-def get_mapping():
-    short_links = [l["short_link"] for l in links]
-    print(short_links)
-    original_urls = [l["original_url"] for l in links]
-    for i in range(len(short_links)):
-        mapped_links.append({"original_url": original_urls[i], "short_link": short_links[i]})
-    if not mapped_links:
-        raise HTTPException(
-            status_code=404,
-            detail='No mappings in storage'
-        )
-    return mapped_links
-
-@app.get('/mapping/html', response_class = HTMLResponse)
-def get_mapping():
-    mapped_links = []
-    short_links = [l["short_link"] for l in links]
-    original_urls = [l["original_url"] for l in links]
-    for i in range(len(short_links)):
-        mapped_links.append({"original_url": original_urls[i], "short_link": short_links[i]})
-    if not mapped_links:
-        return """
-        <html>
-            <head>
-                <title>LURL -> SURL Mappings</title>
-            </head>
-            <body>
-                <h1>List of Mappings</h1>
-                <p> No LURL -> SURL Mapping available</p>
-            </body>
-        </html>
-    """
-    html = """
-    <html>
-        <head>
-            <title>LURL -> SURL Mappings</title>
-        </head>
-        <body>
-         <h1>List of Mappings</h1>
-        <table border='1'>
-        <tr><th>Original LURL</th><th>SURL</th></tr>
-            """
-    for d in mapped_links:
-        html += "<tr>" + "<td>" + d["original_url"] + "</td>" + "<td>" + d["short_link"] + "</td>" + "</tr>"
-           
-    html += """
-            </body>
-        </html>
-        """
-    return html
-
+@app.post('/events', status_code = 200)
+async def send_status(event: dict = Body(...)):
+    print("Recieved Event", event)
+    return {"message": "received"}
+    

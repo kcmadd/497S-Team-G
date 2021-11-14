@@ -1,0 +1,33 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Aditya Narayanan", email = "arnarayanan@umass.edu"},
+]
+dependencies = [
+    "fastapi~=0.70",
+    "uvicorn~=0.15",
+]
+requires-python = ">=3.9"
+dynamic = ["classifiers"]
+license = {text = "MIT"}
+
+[project.urls]
+homepage = ""
+
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+
+[tool.pdm.scripts]
+start_server = "uvicorn main:app --host 0.0.0.0 --port 5009 --reload"
+docker_build = "docker build -t view_posts_microservice ."
+docker_build_dev = "docker build -t view_posts_microservice_dev -f Dockerfile_dev ."
+docker_run = "docker run -d --rm --name my_view_posts_ms -p 5009:5009 view_posts_microservice"
+docker_run_dev = "./bin/run_dev.sh"
+docker_stop = "docker stop view_posts_microservice"
+docker_stop_dev = "docker stop view_posts_microservice_dev"
