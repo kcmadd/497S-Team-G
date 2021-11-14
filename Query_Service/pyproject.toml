@@ -9,9 +9,9 @@ dependencies = [
     "fastapi~=0.70",
     "uvicorn~=0.15",
     "requests~=2.26",
-    "pymongo~=3.12",
     "motor~=2.5",
-    "bson~=0.5",
+    "asyncio~=3.4",
+    "pymongo~=3.12",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]

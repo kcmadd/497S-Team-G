@@ -8,9 +8,9 @@ from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 import requests
-#import motor.motor_asyncio
-#from bson import ObjectId
-from pymongo import MongoClient
+from pymongo import *
+import asyncio
+import motor.motor_asyncio
 import os
 
 app = FastAPI();
@@ -38,35 +38,48 @@ class User(BaseModel):
     name: str
     phone_number: str
 
-#client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@mongo:27017/")
+#client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@localhost:27888/?authSource=admin")
 username = os.getenv("ME_username")
 password = os.getenv("ME_password")
-client = MongoClient("mongodb://{}:{}@mongo:27017/".format(username, password))
+client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://root:example@mongo:27017/')
+#client = MongoClient("mongodb://root:example@mongo:27017/")
 
 db1 = client.posts
-db2 = client.users
+db2 = client.user_info
 
-post_collection = db1.get_collection("post_collection")
-user_collection = db2.get_collection("user_collection")
+post_collection = db1.post_collection
+user_collection = db2.user_collection
+
+print(post_collection)
+
+async def database(body):
+    #post = jsonable_encoder(student)
+    print (body)
+    if body["type"] == "Post_Created":
+        print("insert to db")
+        new_post = post_collection.insert_one(body["data"])
+        print("finished")
+        #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
+        return JSONResponse(status_code=200, content={"item": "posted"})
+    
+    if body["type"] == "User_Created":
+        new_user = await user_collection.insert_one(body)
+        created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content=created_user)
 
 @app.post("/events", status_code=200)
-async def database(body: dict = Body(...)):
-    #post = jsonable_encoder(student)
-    if body.type == "Post_Created":
-        new_post = await post_collection.insert_one(body)
-        created_post = await post_collection.find_one({"_id": new_post.inserted_id})
-        return JSONResponse(status_code=200, content=created_post)
-    
-    if body.type == "User_Created":
-        new_user = await user_collection.insert_one(body)
-        created_user = await user_collection.find_one({"_id": body.inserted_id})
-        return JSONResponse(status_code=200, content=created_user)
+async def run_ops(body: dict = Body(...)):
+    database(body)
+    print("finished")
 
 @app.get("/posts", status_code=200)
 async def list_posts():
-    posts = await post_collection.find().to_list(10)
-    return posts
+    # posts = await post_collection.find().to_list(10)
+    # return posts
+    for document in await post_collection.to_list(length=100):
+        print(document)
 
+"""
 @app.get("/users", status_code=200)
 async def list_posts():
     users = await user_collection.find().to_list(10)
@@ -82,6 +95,7 @@ async def filter_by_location(city: str):
         detail='No postings for this location available'
     )
     return location_posts
+"""
 
 # posts = []
 # user_info = []

@@ -55,7 +55,7 @@ async def post_info(post: Post):
     async with httpx.AsyncClient() as client:
         await client.post("http://localhost:5005/events", json=event)
 
-    return data
+    return event
 
 # This endpoint to view a particular post based on postid 
 @app.get('/viewpost/{postid}', status_code= 200)
@@ -75,7 +75,7 @@ async def get_post(postid : str):
     return post
 
 @app.post('/events', status_code = 200)
-async def send_status(event: Event):
+async def send_status(event: dict = Body(...)):
     print("Recieved Event", event)
     return {"message": "received"}
     

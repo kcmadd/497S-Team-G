@@ -22,6 +22,7 @@ build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
 docker_pull_db = "docker pull mongo"
-docker_run_db = "docker run --name mongo-service -d mongo"
+docker_run_db = "docker run --name mongo_service -d mongo"
+docker_run_db_1 = "docker run -d --name mongo-service -p 27888:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=example mongo"
 docker_compose_db = "docker-compose -f stack.yml up"
-docker_stop = "docker stop mongo"
+docker_stop = "docker stop mongo-service"
