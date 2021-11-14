@@ -17,8 +17,8 @@ RUN pdm install
 # Copy the code into the container
 COPY ./main.py ./main.py
 
-# our app is running on port 5000 within the container, so need to expose it
-EXPOSE 5000
+# our app is running on port 8080 within the container, so need to expose it
+EXPOSE 8080
 
 # the command that starts our app
 CMD ["pdm", "run", "start_server"]

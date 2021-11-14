@@ -1,13 +1,14 @@
 [project]
-name = "python_api_server_1"
+name = "signup_login"
 version = "1.0"
-description = "A simple API server"
+description = "signup_login server"
 authors = [
     {name = "Kalyan Maddineni", email = "smaddineni@umass.edu"},
 ]
 dependencies = [
     "fastapi~=0.68",
     "uvicorn~=0.15",
+    "cryptography~=35.0.0",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -24,9 +25,9 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 
 [tool.pdm.scripts]
-start_server = "uvicorn main:app --host 0.0.0.0 --port 5000 --reload"
-docker_build = "docker build -t python_server_1 ."
-docker_build_dev = "docker build -t python_server_1_dev -f Dockerfile_dev ."
-docker_run = "docker run -d --rm --name my_python_server_1 -p 5000:5000 python_server_1"
+start_server = "uvicorn main:app --host 0.0.0.0 --port 8080 --reload"
+docker_build = "docker build -t signup_login ."
+docker_build_dev = "docker build -t signup_login_dev -f Dockerfile_dev ."
+docker_run = "docker run -d --rm --name my_signup_login -p 8080:8080 signup_login"
 docker_run_dev = "./bin/run_dev.sh"
-docker_stop = "docker stop my_python_server_1"
+docker_stop = "docker stop my_signup_login"
