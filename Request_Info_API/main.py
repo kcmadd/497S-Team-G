@@ -71,7 +71,8 @@ async def send_info(postId: str, subletterInfo : user):
             'type': 'Mark_Interested',
             'data': data
         }
-        await requests.post("http://localhost:5005/events", event)
+        async with httpx.AsyncClient() as client:
+            await client.post("http://localhost:5005/events", json=event)
         messages[idToOwnerInfo[postId]['user_id']] = json_userInfo   #Pass the user info.
         return data
     else:
@@ -85,7 +86,8 @@ async def mark_not_interested(postId: str, userId: user_id):
         'type': 'Mark_Not_Interested',
         'data': json_userInfo
     }
-    await requests.post("http://localhost:5005/events", event)
+    async with httpx.AsyncClient() as client:
+            await client.post("http://localhost:5005/events", json=event)
     return "Marked Not Interested."
 
 

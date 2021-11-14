@@ -9,6 +9,7 @@ dependencies = [
     "fastapi~=0.70",
     "uvicorn~=0.15",
     "requests~=2.26",
+    "httpx~=0.20",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -25,7 +26,7 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 
 [tool.pdm.scripts]
-start_server = "uvicorn main:app --host 0.0.0.0 --port 5000 --reload"
+start_server = "uvicorn main:app --host 0.0.0.0 --port 5001 --reload"
 docker_build = "docker build -t request_info_server ."
-docker_run = "docker run -d --rm --name request_info_server_container -p 5000:5000 request_info_server"
+docker_run = "docker run -d --rm --name request_info_server_container -p 5001:5001 request_info_server"
 docker_stop = "docker stop request_info_server_container"
