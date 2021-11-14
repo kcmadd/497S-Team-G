@@ -35,6 +35,7 @@ app = FastAPI()
 #     type: str
 #     data: Data
 
+
 @app.post('/events', status_code=200)
 def event_bus(event: dict = Body(...)):
     print(jsonable_encoder(event))
