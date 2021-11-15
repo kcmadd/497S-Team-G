@@ -18,7 +18,7 @@ user_map = {} #for user lookup
 
 class User(BaseModel):
     username: str
-    encrypt_password: str
+    password: str
     fname: str
     lname: str
     phone: str
@@ -46,27 +46,23 @@ def account(username: str):
 
 #endpoint for signing up
 @app.post('/signup')
-async def signup(username: str=Body(...), password: str=Body(...), fname: str=Body(...), lname: str=Body(...), phone: str=Body(...)):
-    encrypted_password = encrypt_password(password)
-    if(username in user_map.keys()):
-        print("User already taken")
-        return
-    else:
-        data = {'username': username, 'encrypt_password': encrypted_password, 'fname': fname, 'lname': lname, 'phone': phone}
-        users_pass.append({'username': username, 'encrypted_password': encrypted_password})
-        users_data.append({'username': username, 'fname': fname, 'lname': lname, 'phone': phone})
-        user_map[username] = encrypted_password
+async def signup(body: dict = Body(...)):
+    encrypted_password = encrypt_password(body["password"])
+    data = {'username': body["username"], 'password': body["password"], 'fname': body["fname"], 'lname': body["lname"], 'phone': body["phone"]}
+        # users_pass.append({'username': username, 'encrypted_password': encrypted_password})
+        # users_data.append({'username': username, 'fname': fname, 'lname': lname, 'phone': phone})
+        # user_map[username] = encrypted_password
         #account(username)
 
-        event = {
-            "type": "User_Created",
-            "data": data
-        }
+    event = {
+        "type": "User_Created",
+        "data": data
+    }
     
-        async with httpx.AsyncClient() as client:
-            await client.post("http://localhost:5007/events", json=event)
+    async with httpx.AsyncClient() as client:
+        await client.post("http://localhost:5005/events", json=event)
 
-        return event
+    return event
 
 #endpoint for logging in
 @app.get('/login')

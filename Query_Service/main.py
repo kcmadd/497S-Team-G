@@ -58,20 +58,23 @@ users = []
 @app.post("/events", status_code=200)
 async def database(body: dict = Body(...)):
     print (body)
-    if body["type"] == "Post_Created":
+
+    if body["type"] == "User_Created":
+        users.append(body["data"])
+        print('enter')
+        await user_collection.insert_one(body["data"])
+        print('exit')
+        #created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'user': 'created'})
+
+    elif body["type"] == "Post_Created":
         posts.append(body["data"])
         await post_collection.insert_one(body["data"])
         #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
         return JSONResponse(status_code=200, content={"post": "created"})
-    
-    if body["type"] == "User_Created":
-        users.append(body["data"])
-        new_user = await user_collection.insert_one(body["data"])
-        #created_user = user_collection.find_one({"_id": body.inserted_id})
-        return JSONResponse(status_code=200, content={'user': 'created'})
 
     # update based on mongo syntax
-    if body["type"] == "Mark_Interested":
+    elif body["type"] == "Mark_Interested":
         print(posts)
         currPostId = body["data"]["postId"]
         for i in range(len(posts)):
@@ -82,7 +85,7 @@ async def database(body: dict = Body(...)):
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
-    if body["type"] == "Mark_Not_Interested":
+    elif body["type"] == "Mark_Not_Interested":
         print(posts)
         currPostId = body["data"]["postId"]
         print(posts)
@@ -90,7 +93,7 @@ async def database(body: dict = Body(...)):
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
-    if body["type"] == "Get_Owner_Info":
+    elif body["type"] == "Get_Owner_Info":
         currPostId = body["data"]["postId"]
         for i in range(len(posts)):
             if posts[i]["pid"] == currPostId:
