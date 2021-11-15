@@ -47,5 +47,5 @@ def event_bus(event: dict = Body(...)):
     #httpx.post("http://localhost:5001/events", json=jsonable_encoder(event))
         # httpx.post("http://localhost:5002/events", json=jsonable_encoder(event))
     httpx.post("http://localhost:5003/events", json=jsonable_encoder(event))
-        # httpx.post("http://localhost:5004/events", json=jsonable_encoder(event))
+    httpx.post("http://localhost:5007/events", json=jsonable_encoder(event))
     return JSONResponse(status_code = 200, content={"message":"received"})
