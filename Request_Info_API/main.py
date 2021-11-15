@@ -3,10 +3,20 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
+import requests
+import httpx
 
 class user(BaseModel):
-    user_name: str
-    phone_number: str
+    uid: str
+    fname: str
+    lname: str
+    email: str 
+    phone: str
+    # user_name: str
+    # phone_number: str
+
+class user_id(BaseModel):
+    uid: str
 
 userInfo = [{
     "user_id": 1,
@@ -46,19 +56,50 @@ messages = {
 app = FastAPI()
 
 @app.get('/posts/{postId}', status_code=200)
-def get_info(postId : str):
-    if postId in idToOwnerInfo:
-        return idToOwnerInfo[postId]['details']
-    else:
-        return JSONResponse(status_code=404, content={"message" : "Post Doesnot Exist in the database."})
+async def get_info(postId : str):
+    #
+    json_userInfo = {}
+    json_userInfo["postId"] = postId
+    data = json_userInfo
+    event = {
+        'type': 'Get_Owner_Info',
+        'data': data
+    }
+    async with httpx.AsyncClient() as client:
+        await client.post("http://localhost:5005/events", json=event)
 
-@app.post('/posts/{postId}')
-def send_info(postId: str, subletterInfo : user):
+    return ""
+    #else:
+        #return JSONResponse(status_code=404, content={"message" : "Post Doesnot Exist in the database."})
+
+@app.post('/posts/{postId}', status_code=200)
+async def send_info(postId: str, subletterInfo : user):
     json_userInfo = jsonable_encoder(subletterInfo)
-    if postId in idToOwnerInfo:
-        messages[idToOwnerInfo[postId]['user_id']] = json_userInfo   #Pass the user info.
-        return JSONResponse(status_code=200, content={"message" : "Message sent"})
-    else:
-        return JSONResponse(status_code=404, content={"message" : "Could not notify the owner since the post doesnot exist."})
+    json_userInfo["postId"] = postId
+    # if postId in idToOwnerInfo:
+    data = json_userInfo
+    event = {
+        'type': 'Mark_Interested',
+        'data': data
+    }
+    async with httpx.AsyncClient() as client:
+        await client.post("http://localhost:5005/events", json=event)
+    # messages[idToOwnerInfo[postId]['user_id']] = json_userInfo   #Pass the user info.
+    return data
+    # else:
+    #     return JSONResponse(status_code=404, content={"message" : "Could not notify the owner since the post doesnot exist."})
+
+@app.post('/posts/{postId}/NoLongerInterested', status_code=200)
+async def mark_not_interested(postId: str, userId: user_id):
+    json_userInfo = jsonable_encoder(userId)
+    json_userInfo["postId"] = postId
+    event = {
+        'type': 'Mark_Not_Interested',
+        'data': json_userInfo
+    }
+    async with httpx.AsyncClient() as client:
+            await client.post("http://localhost:5005/events", json=event)
+    return "Marked Not Interested."
+
 
 

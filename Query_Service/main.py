@@ -25,10 +25,11 @@ class Post(BaseModel):
     city: str
     state: str
     country: str # look into converting the location fields to json in the BaseModel
-
+    
 class Data(BaseModel):
     pid: str
     posting: Post
+    interested_users: list
 
 class Event(BaseModel):
     type: str
@@ -41,36 +42,62 @@ class User(BaseModel):
 #client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@localhost:27888/?authSource=admin")
 username = os.getenv("ME_username")
 password = os.getenv("ME_password")
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://root:example@mongo:27017/')
+client = motor.motor_asyncio.AsyncIOMotorClient()
 #client = MongoClient("mongodb://root:example@mongo:27017/")
 
 db1 = client.posts
 db2 = client.user_info
 
-post_collection = db1.post_collection
+post_collection = db1.posts_collection
 user_collection = db2.user_collection
 
 print(post_collection)
-
-async def database(body):
-    #post = jsonable_encoder(student)
-    print (body)
-    if body["type"] == "Post_Created":
-        print("insert to db")
-        new_post = post_collection.insert_one(body["data"])
-        print("finished")
-        #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
-        return JSONResponse(status_code=200, content={"item": "posted"})
-    
-    if body["type"] == "User_Created":
-        new_user = await user_collection.insert_one(body)
-        created_user = user_collection.find_one({"_id": body.inserted_id})
-        return JSONResponse(status_code=200, content=created_user)
+posts = []
+users = []
 
 @app.post("/events", status_code=200)
-async def run_ops(body: dict = Body(...)):
-    database(body)
-    print("finished")
+async def database(body: dict = Body(...)):
+    print (body)
+    if body["type"] == "Post_Created":
+        posts.append(body["data"])
+        await post_collection.insert_one(body["data"])
+        #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
+        return JSONResponse(status_code=200, content={"post": "created"})
+    
+    if body["type"] == "User_Created":
+        users.append(body["data"])
+        new_user = await user_collection.insert_one(body["data"])
+        #created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'user': 'created'})
+
+    # update based on mongo syntax
+    if body["type"] == "Mark_Interested":
+        print(posts)
+        currPostId = body["data"]["postId"]
+        for i in range(len(posts)):
+            if posts[i]["pid"] == currPostId:
+                posts[i]["interested_users"].append(body["data"]["uid"])
+        print(posts)
+        update_post = await post_collection.update_one({"pid": currPostId}, {"$push": {"interested_users": body["data"]["uid"]}})
+       # created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'message': 'received'})
+    
+    if body["type"] == "Mark_Not_Interested":
+        print(posts)
+        currPostId = body["data"]["postId"]
+        print(posts)
+        update_post = await post_collection.update_one({"pid": currPostId}, {"$pull": {"interested_users": body["data"]["uid"]}})
+       # created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'message': 'received'})
+    
+    if body["type"] == "Get_Owner_Info":
+        currPostId = body["data"]["postId"]
+        for i in range(len(posts)):
+            if posts[i]["pid"] == currPostId:
+                #Get owner info from DB.
+                #Return owner info to the Event.
+                print('To do')
+        return JSONResponse(status_code=200, content={'message': 'sent'})
 
 @app.get("/posts", status_code=200)
 async def list_posts():

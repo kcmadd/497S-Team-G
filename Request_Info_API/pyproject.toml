@@ -8,6 +8,8 @@ authors = [
 dependencies = [
     "fastapi~=0.70",
     "uvicorn~=0.15",
+    "requests~=2.26",
+    "httpx~=0.20",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]

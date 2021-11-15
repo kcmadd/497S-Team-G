@@ -11,6 +11,7 @@ dependencies = [
     "httpx~=0.20",
     "uvicorn~=0.15",
     "fastapi~=0.70",
+    "aiohttp~=3.8",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -27,7 +28,7 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 
 [tool.pdm.scripts]
-start_server = "uvicorn main:app --host 0.0.0.0 --port 5000 --reload"
+start_server = "uvicorn main:app --host 0.0.0.0 --port 5008 --reload"
 docker_build = "docker build -t posts_server ."
 docker_build_dev = "docker build -t posts_server_dev -f Dockerfile_dev ."
 docker_run = "docker run -d --rm --name my_posts_server -p 5000:5000 posts_server"
