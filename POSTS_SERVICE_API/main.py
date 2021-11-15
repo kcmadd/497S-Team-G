@@ -27,6 +27,7 @@ class Post(BaseModel):
 class Data(BaseModel):
     pid: str
     posting: Post
+    interested_users: list
 
 class Event(BaseModel):
     type: str
@@ -46,7 +47,7 @@ def create_postid():
 @app.post('/createpost', status_code = 201)
 async def post_info(post: Post):
     id = create_postid()
-    data = {"pid":id, "posting":jsonable_encoder(post)}
+    data = {"pid":id, "posting":jsonable_encoder(post), "interested_users": []}
     posts.append(data)
     event = {
             "type": "Post_Created",
