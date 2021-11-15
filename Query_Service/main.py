@@ -25,11 +25,12 @@ class Post(BaseModel):
     city: str
     state: str
     country: str # look into converting the location fields to json in the BaseModel
-    interested_users: list
+    
 
 class Data(BaseModel):
     pid: str
     posting: Post
+    interested_users: list
 
 class Event(BaseModel):
     type: str
@@ -55,7 +56,7 @@ print(post_collection)
 posts = []
 @app.post("/events", status_code=200)
 async def run_ops(body: dict = Body(...)):
-    database(body)
+    await database(body)
     #print("finished")
 
 async def database(body):
@@ -64,24 +65,51 @@ async def database(body):
     if body["type"] == "Post_Created":
         print("insert to db")
         posts.append(body["data"])
-       # new_post = post_collection.insert_one(body["data"])
+        #new_post = post_collection.insert_one(body["data"])
         print("finished")
         #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
         return JSONResponse(status_code=200, content={"item": "posted"})
     
     if body["type"] == "User_Created":
-        new_user = await user_collection.insert_one(body)
+        #new_user = await user_collection.insert_one(body)
         #created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
 
     # update based on mongo syntax
     if body["type"] == "Mark_Interested":
+        print(posts)
         currPostId = body["data"]["postId"]
-        if body["data"]["postId"] in posts:
-            posts[currPostId]["interested_users"].append(body["data"]["uid"])
+        for i in range(len(posts)):
+            if posts[i]["pid"] == currPostId:
+                posts[i]["interested_users"].append(body["data"]["uid"])
+        print(posts)
         #update_post = await post_collection.insert_one(body)
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
+    
+    if body["type"] == "Mark_Not_Interested":
+        print(posts)
+        currPostId = body["data"]["postId"]
+        for i in range(len(posts)):
+            if posts[i]["pid"] == currPostId:
+                users = posts[i]["pid"]["interested_users"]
+                for i in range(len(users)):
+                    if users[i] == int(body["data"]["uid"]):
+                        del users[i]
+        print(posts)
+        #update_post = await post_collection.insert_one(body)
+       # created_user = user_collection.find_one({"_id": body.inserted_id})
+        return JSONResponse(status_code=200, content={'message': 'received'})
+    
+    if body["type"] == "Get_Owner_Info":
+        currPostId = body["data"]["postId"]
+        for i in range(len(posts)):
+            if posts[i]["pid"] == currPostId:
+                #Get owner info from DB.
+                #Return owner info to the Event.
+                print('To do')
+        return JSONResponse(status_code=200, content={'message': 'sent'})
+
 
 @app.post("/events", status_code=200)
 async def run_ops(body: dict = Body(...)):
