@@ -3,14 +3,17 @@ FROM python
 
 # Install PDM
 RUN pip install pdm
-RUN pip install fastapi
 RUN pip install uvicorn
+RUN pip install motor
+RUN pip install pymongo
+RUN pip install asyncio
+RUN pip install bson
 
 # Create the directory inside the container for the app
 WORKDIR /usr/src/app
 
 # our app is running on port 5000 within the container, so need to expose it
-EXPOSE 5000
+EXPOSE 5003
 
 # the command that starts our app
-CMD ["pdm", "run", "start_server"]
+CMD pdm install; pdm run start_server

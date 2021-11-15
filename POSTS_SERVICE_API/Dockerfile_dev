@@ -5,6 +5,10 @@ FROM python
 RUN pip install pdm
 RUN pip install uvicorn
 RUN pip install fastapi
+RUN pip install requests
+RUN pip install httpx
+RUN pip install asyncio
+
 # Create the directory inside the container for the app
 WORKDIR /usr/src/app
 
@@ -12,4 +16,4 @@ WORKDIR /usr/src/app
 EXPOSE 5000
 
 # the command that starts our app
-CMD ["pdm", "run", "start_server"]
+CMD pdm install; pdm run start_server

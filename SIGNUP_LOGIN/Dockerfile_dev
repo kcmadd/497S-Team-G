@@ -8,7 +8,7 @@ RUN pip install pdm
 WORKDIR /usr/src/app
 
 # our app is running on port 5000 within the container, so need to expose it
-EXPOSE 8080
+EXPOSE 5007
 
 # the command that starts our app
 CMD pdm install; pdm run start_server

@@ -3,14 +3,25 @@ from fastapi import FastAPI
 import hashlib
 import base64
 from pydantic import HttpUrl
+from pydantic import BaseModel
 from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from cryptography.fernet import Fernet
+import httpx
+from httpx import AsyncClient
 
 app = FastAPI()
 users_pass = []
 users_data = []
 user_map = {} #for user lookup
+
+
+class User(BaseModel):
+    username: str
+    encrypt_password: str
+    fname: str
+    lname: str
+    phone: str
 
 #for encrypting strings
 key = Fernet.generate_key() #encryption key generator
@@ -35,24 +46,35 @@ def account(username: str):
 
 #endpoint for signing up
 @app.post('/signup')
-def signup(username: str=Body(...), password: str=Body(...), fname: str=Body(...), lname: str=Body(...), phone: str=Body(...)):
+async def signup(username: str=Body(...), password: str=Body(...), fname: str=Body(...), lname: str=Body(...), phone: str=Body(...)):
     encrypted_password = encrypt_password(password)
     if(username in user_map.keys()):
-        print("\n\033[91mUser already taken\033[0m\n")
+        print("User already taken")
+        return
     else:
-        users_pass.append({'email': username, 'encrypted_password': encrypted_password})
-        users_data.append({'email': username, 'fname': fname, 'lname': lname, 'phone': phone})
+        data = {'username': username, 'encrypt_password': encrypted_password, 'fname': fname, 'lname': lname, 'phone': phone}
+        users_pass.append({'username': username, 'encrypted_password': encrypted_password})
+        users_data.append({'username': username, 'fname': fname, 'lname': lname, 'phone': phone})
         user_map[username] = encrypted_password
-        account(username)
-    return users_pass
+        #account(username)
+
+        event = {
+            "type": "User_Created",
+            "data": data
+        }
+    
+        async with httpx.AsyncClient() as client:
+            await client.post("http://localhost:5007/events", json=event)
+
+        return event
 
 #endpoint for logging in
 @app.get('/login')
 def login(username: str=Body(...), password: str=Body(...)):
     if(username in user_map.keys()):
         if(password == decrypt_password(user_map[username]).decode("utf-8")):
-            account(username)
-            #print("password correct")
+            #account(username)
+            print("password correct")
         else:
             print("\n\033[91mpassword incorrect\033[0m\n")
 

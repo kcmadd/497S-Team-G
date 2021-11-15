@@ -9,6 +9,7 @@ dependencies = [
     "fastapi~=0.68",
     "uvicorn~=0.15",
     "cryptography~=35.0.0",
+    "httpx~=0.21",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -25,9 +26,9 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 
 [tool.pdm.scripts]
-start_server = "uvicorn main:app --host 0.0.0.0 --port 8080 --reload"
+start_server = "uvicorn main:app --host 0.0.0.0 --port 5007 --reload"
 docker_build = "docker build -t signup_login ."
 docker_build_dev = "docker build -t signup_login_dev -f Dockerfile_dev ."
-docker_run = "docker run -d --rm --name my_signup_login -p 8080:8080 signup_login"
+docker_run = "docker run -d --rm --name my_signup_login -p 5007:5007 signup_login"
 docker_run_dev = "./bin/run_dev.sh"
 docker_stop = "docker stop my_signup_login"

@@ -1,0 +1,28 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Aditya Narayanan", email = "arnarayanan@umass.edu"},
+]
+dependencies = []
+requires-python = ">=3.9"
+dynamic = ["classifiers"]
+license = {text = "MIT"}
+
+[project.urls]
+homepage = ""
+
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+
+[tool.pdm.scripts]
+docker_pull_db = "docker pull mongo"
+docker_run_db = "docker run --name mongo_service -d mongo"
+docker_run_db_1 = "docker run -d --name mongo-service -p 27888:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=example mongo"
+docker_compose_db = "docker-compose -f stack.yml up"
+docker_stop = "docker stop mongo-service"
