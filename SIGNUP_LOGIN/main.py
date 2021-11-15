@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import hashlib
 import base64
 from pydantic import HttpUrl
+from pydantic import BaseModel
 from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from cryptography.fernet import Fernet
@@ -11,6 +12,14 @@ app = FastAPI()
 users_pass = []
 users_data = []
 user_map = {} #for user lookup
+
+
+class User(BaseModel):
+    user_name: str
+    password: str
+    first_name: str
+    last_name: str
+    phone_number: str
 
 #for encrypting strings
 key = Fernet.generate_key() #encryption key generator
