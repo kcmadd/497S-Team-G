@@ -26,7 +26,6 @@ class Post(BaseModel):
     state: str
     country: str # look into converting the location fields to json in the BaseModel
     
-
 class Data(BaseModel):
     pid: str
     posting: Post
@@ -43,37 +42,33 @@ class User(BaseModel):
 #client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@localhost:27888/?authSource=admin")
 username = os.getenv("ME_username")
 password = os.getenv("ME_password")
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://root:example@mongo:27017/')
+client = motor.motor_asyncio.AsyncIOMotorClient()
 #client = MongoClient("mongodb://root:example@mongo:27017/")
 
 db1 = client.posts
 db2 = client.user_info
 
-post_collection = db1.post_collection
+post_collection = db1.posts_collection
 user_collection = db2.user_collection
 
 print(post_collection)
 posts = []
-@app.post("/events", status_code=200)
-async def run_ops(body: dict = Body(...)):
-    await database(body)
-    #print("finished")
+users = []
 
-async def database(body):
-    #post = jsonable_encoder(student)
+@app.post("/events", status_code=200)
+async def database(body: dict = Body(...)):
     print (body)
     if body["type"] == "Post_Created":
-        print("insert to db")
         posts.append(body["data"])
-        #new_post = post_collection.insert_one(body["data"])
-        print("finished")
+        await post_collection.insert_one(body["data"])
         #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
-        return JSONResponse(status_code=200, content={"item": "posted"})
+        return JSONResponse(status_code=200, content={"post": "created"})
     
     if body["type"] == "User_Created":
-        #new_user = await user_collection.insert_one(body)
+        users.append(body["data"])
+        new_user = await user_collection.insert_one(body["data"])
         #created_user = user_collection.find_one({"_id": body.inserted_id})
-        return JSONResponse(status_code=200, content={'message': 'received'})
+        return JSONResponse(status_code=200, content={'user': 'created'})
 
     # update based on mongo syntax
     if body["type"] == "Mark_Interested":
@@ -83,21 +78,15 @@ async def database(body):
             if posts[i]["pid"] == currPostId:
                 posts[i]["interested_users"].append(body["data"]["uid"])
         print(posts)
-        #update_post = await post_collection.insert_one(body)
+        update_post = await post_collection.update_one({"pid": currPostId}, {"$push": {"interested_users": body["data"]["uid"]}})
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
     if body["type"] == "Mark_Not_Interested":
         print(posts)
         currPostId = body["data"]["postId"]
-        for i in range(len(posts)):
-            if posts[i]["pid"] == currPostId:
-                users = posts[i]["pid"]["interested_users"]
-                for i in range(len(users)):
-                    if users[i] == int(body["data"]["uid"]):
-                        del users[i]
         print(posts)
-        #update_post = await post_collection.insert_one(body)
+        update_post = await post_collection.update_one({"pid": currPostId}, {"$pull": {"interested_users": body["data"]["uid"]}})
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
@@ -109,12 +98,6 @@ async def database(body):
                 #Return owner info to the Event.
                 print('To do')
         return JSONResponse(status_code=200, content={'message': 'sent'})
-
-
-@app.post("/events", status_code=200)
-async def run_ops(body: dict = Body(...)):
-    database(body)
-    print("finished")
 
 @app.get("/posts", status_code=200)
 async def list_posts():

@@ -43,7 +43,7 @@ def event_bus(event: dict = Body(...)):
     #e = await event.json()
     #async with httpx.AsyncClient() as client:
     #requests.post("http://localhost:5005/events", json=jsonable_encoder(event))
-    httpx.post("http://localhost:5000/events", json=jsonable_encoder(event))
+    httpx.post("http://localhost:5008/events", json=jsonable_encoder(event))
     #httpx.post("http://localhost:5001/events", json=jsonable_encoder(event))
         # httpx.post("http://localhost:5002/events", json=jsonable_encoder(event))
     httpx.post("http://localhost:5003/events", json=jsonable_encoder(event))
