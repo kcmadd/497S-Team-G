@@ -1,0 +1,15 @@
+Event_Bus/__pypackages__
+Event_Bus/__pycache__
+
+Query_Service/__pypackages__
+Query_Service/__pycache__
+
+POSTS_SERVICE_API/__pypackages__
+POSTS_SERVICE_API/__pycache__
+
+SIGNUP_LOGIN/__pypackages__
+SIGNUP_LOGIN/__pycache__
+
+Request_Info_API/__pypackages__
+Request_Info_API/__pycache__
+
