@@ -23,15 +23,16 @@ class User(BaseModel):
     phone: str
 
 #for encrypting strings
-key = Fernet.generate_key() #encryption key generator
+key = b'6AE8AUmjBcDpaoTXKnexCUzKmXbgxZGYfQuAFlNsdTg=' #encryption key generator
 cipher_suite = Fernet(key)
-print(key)
+
 def encrypt_password(password: str):
     encrypted_pass = cipher_suite.encrypt(password.encode('utf-8'))
-    return encrypted_pass
+    return encrypted_pass.decode("utf-8")
 
 def decrypt_password(encrypted_pass: str):
-    password = cipher_suite.decrypt(encrypted_pass)
+    encrypted_pass = encrypted_pass.encode("utf-8")
+    password = cipher_suite.decrypt(encrypted_pass).decode("utf-8")
     return password
 
 #endpoint for signing up
@@ -39,7 +40,7 @@ def decrypt_password(encrypted_pass: str):
 async def signup(body: dict = Body(...)):
     encrypted_password = encrypt_password(body["password"])
     uid = str(uuid.uuid4())
-    data = {"user_id": uid, 'username': body["username"], 'password': body["password"], 'fname': body["fname"], 'lname': body["lname"], 'phone': body["phone"]}
+    data = {"user_id": uid, 'username': body["username"], 'password': encrypted_password, 'fname': body["fname"], 'lname': body["lname"], 'phone': body["phone"]}
 
     event = {
         "type": "User_Created",
