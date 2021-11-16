@@ -36,31 +36,12 @@ class Event(BaseModel):
 app = FastAPI()
 client = AsyncClient()
 
-posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “location” : { “street_address” : str “city”: str, “state”: str, “country”: str}}}
+posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “street_address” : str “city”: str, “state”: str, “country”: str}}
 
 def create_postid():
     random_number = str(hex(random.randint(1000,9999)))
     print(random_number)
     return random_number
- 
-# This endpoint for a sublessor to create a posting for a lease 
-@app.post('/createpost', status_code = 201)
-async def post_info(post: Post):
-    id = create_postid()
-    data = {"pid":id, "posting":jsonable_encoder(post), "interested_users": []}
-    posts.append(data)
-    event = {
-            "type": "Post_Created",
-            "data": data
-        }
-    
-    #async with httpx.AsyncClient() as client:
-        #await client.post("http://localhost:5005/events", json=event)
-    async with aiohttp.ClientSession() as session:
-        await session.post("http://0.0.0.0:5005/events", json=event)
-    #httpx.post("http://localhost:5005/events", json=event)
-
-    return event
 
 # This endpoint to view a particular post based on postid 
 @app.get('/viewpost/{postid}', status_code= 200)
@@ -78,6 +59,25 @@ async def get_post(postid : str):
             detail='post does not exist'
         )
     return post
+ 
+# This endpoint for a sublessor to create a posting for a lease 
+@app.post('/createpost/{userId}', status_code = 201)
+async def post_info(userId: str, post: Post):
+    id = create_postid()
+    data = {"uid": userId, "pid":id, "posting":jsonable_encoder(post), "interested_users": []}
+    posts.append(data)
+    event = {
+            "type": "Post_Created",
+            "data": data
+        }
+    
+    #async with httpx.AsyncClient() as client:
+        #await client.post("http://localhost:5005/events", json=event)
+    async with aiohttp.ClientSession() as session:
+        await session.post("http://0.0.0.0:5005/events", json=event)
+    #httpx.post("http://localhost:5005/events", json=event)
+
+    return event
 
 @app.post('/events', status_code = 200)
 async def send_status(event: dict = Body(...)):
