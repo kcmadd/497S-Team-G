@@ -9,11 +9,13 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from cryptography.fernet import Fernet
 import httpx
 from httpx import AsyncClient
+import uuid
 
 app = FastAPI()
 
 
 class User(BaseModel):
+    uid: str
     username: str
     password: str
     fname: str
@@ -23,7 +25,7 @@ class User(BaseModel):
 #for encrypting strings
 key = Fernet.generate_key() #encryption key generator
 cipher_suite = Fernet(key)
-
+print(key)
 def encrypt_password(password: str):
     encrypted_pass = cipher_suite.encrypt(password.encode('utf-8'))
     return encrypted_pass
@@ -36,7 +38,8 @@ def decrypt_password(encrypted_pass: str):
 @app.post('/signup')
 async def signup(body: dict = Body(...)):
     encrypted_password = encrypt_password(body["password"])
-    data = {'username': body["username"], 'password': body["password"], 'fname': body["fname"], 'lname': body["lname"], 'phone': body["phone"]}
+    uid = str(uuid.uuid4())
+    data = {"user_id": uid, 'username': body["username"], 'password': body["password"], 'fname': body["fname"], 'lname': body["lname"], 'phone': body["phone"]}
 
     event = {
         "type": "User_Created",
