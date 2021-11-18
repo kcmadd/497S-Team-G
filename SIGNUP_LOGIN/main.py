@@ -56,3 +56,8 @@ async def signup(body: dict = Body(...)):
 @app.get('/login')
 def login(body: dict = Body(...)):
     return
+
+@app.post('/events', status_code = 200)
+async def send_status(event: dict = Body(...)):
+    print("Recieved Event", event)
+    return {"message": "received"}

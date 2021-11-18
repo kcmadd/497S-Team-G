@@ -1,5 +1,5 @@
 from typing import Optional 
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
@@ -101,5 +101,8 @@ async def mark_not_interested(postId: str, userId: user_id):
             await client.post("http://localhost:5005/events", json=event)
     return "Marked Not Interested."
 
-
+@app.post('/events', status_code = 200)
+async def send_status(event: dict = Body(...)):
+    print("Recieved Event", event)
+    return {"message": "received"}
 
