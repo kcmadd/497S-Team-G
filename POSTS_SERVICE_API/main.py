@@ -36,7 +36,7 @@ class Event(BaseModel):
 app = FastAPI()
 client = AsyncClient()
 
-posts = [] # {“pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str  (#ex: no pets, no smoking, couples only), students “lease_duration”: str, “street_address” : str “city”: str, “state”: str, “country”: str}}
+posts = [] # {"uid": str “pid”: str, “posting” : {“amenities” : str, “num_rooms_availables” : int, “price” : float, “Restrictions”: str, “lease_duration”: str, “street_address” : str, “city”: str, “state”: str, “country”: str}}
 
 def create_postid():
     random_number = str(hex(random.randint(1000,9999)))
