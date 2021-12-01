@@ -71,11 +71,11 @@ async def post_info(userId: str, post: Post):
             "data": data
         }
     
-    #async with httpx.AsyncClient() as client:
-        #await client.post("http://localhost:5005/events", json=event)
-    async with aiohttp.ClientSession() as session:
-        await session.post("http://0.0.0.0:5005/events", json=event)
-    #httpx.post("http://localhost:5005/events", json=event)
+    async with httpx.AsyncClient() as client:
+        await client.post("http://event_bus:5005/events", json=event)
+    # async with aiohttp.ClientSession(trust_env=True) as session:
+    #     await session.post("http://event_bus:5005/events", json=event, ssl=False)
+    # await requests.post("http://localhost:5005/events", json=event)
 
     return event
 

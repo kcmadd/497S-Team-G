@@ -13,6 +13,8 @@ import asyncio
 import motor.motor_asyncio
 import os
 
+from starlette.routing import Host
+
 app = FastAPI();
 
 class Post(BaseModel):
@@ -38,13 +40,13 @@ class Event(BaseModel):
 class User(BaseModel):
     name: str
     phone_number: str
-
-#client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@localhost:27888/?authSource=admin")
+print("reach")
+client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://mongodb-service:27017')
 username = os.getenv("ME_username")
 password = os.getenv("ME_password")
-client = motor.motor_asyncio.AsyncIOMotorClient()
+#client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@mongo:27017/")
 #client = MongoClient("mongodb://root:example@mongo:27017/")
-
+print("reach")
 db1 = client.posts
 db2 = client.user_info
 
@@ -61,20 +63,22 @@ async def database(body: dict = Body(...)):
 
     if body["type"] == "User_Created":
         users.append(body["data"])
-        print('enter')
+        print("before insert post")
         await user_collection.insert_one(body["data"])
-        print('exit')
+        print("after insert post")
         #created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'user': 'created'})
 
-    elif body["type"] == "Post_Created":
+    if body["type"] == "Post_Created":
         posts.append(body["data"])
+        print("before insert post")
         await post_collection.insert_one(body["data"])
+        print("after insert post")
         #created_post = await post_collection.find_one({"_id": new_post.inserted_id})
         return JSONResponse(status_code=200, content={"post": "created"})
 
     # update based on mongo syntax
-    elif body["type"] == "Mark_Interested":
+    if body["type"] == "Mark_Interested":
         print(posts)
         currPostId = body["data"]["postId"]
         for i in range(len(posts)):
@@ -85,7 +89,7 @@ async def database(body: dict = Body(...)):
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
-    elif body["type"] == "Mark_Not_Interested":
+    if body["type"] == "Mark_Not_Interested":
         print(posts)
         currPostId = body["data"]["postId"]
         print(posts)
@@ -93,7 +97,7 @@ async def database(body: dict = Body(...)):
        # created_user = user_collection.find_one({"_id": body.inserted_id})
         return JSONResponse(status_code=200, content={'message': 'received'})
     
-    elif body["type"] == "Get_Owner_Info":
+    if body["type"] == "Get_Owner_Info":
         currPostId = body["data"]["postId"]
         for i in range(len(posts)):
             if posts[i]["pid"] == currPostId:

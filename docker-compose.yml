@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  request_info_api:
+    build: Request_Info_API/.
+    ports:
+      - "5001:5001"
+  event_bus:
+    build: Event_Bus/.
+    ports:
+      - "5005:5005"
+  posts_service_api:
+    build: POSTS_SERVICE_API/.
+    ports:
+      - "5008:5008"
+  signup_login:
+    build: SIGNUP_LOGIN/.
+    ports:
+      - "5007:5007"
+    # depends_on: 
+    #   - "query_service"
+  # Query_Service:
+  #   build: Query_Service/.
+  #   ports:
+  #     - "5003:5003"
+  #   depends_on:
+  #     - "posts-db"
+  query_service:
+    build: Query_Service/.
+    ports:
+      - "5003:5003"
+    depends_on:
+      - "mongodb-service"
+  mongodb-service: 
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes: 
+      - mongodbdata:/data/db
+volumes:
+  mongodbdata: null

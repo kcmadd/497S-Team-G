@@ -6,10 +6,11 @@ authors = [
     {name = "Kalyan Maddineni", email = "smaddineni@umass.edu"},
 ]
 dependencies = [
-    "fastapi~=0.68",
     "uvicorn~=0.15",
     "cryptography~=35.0.0",
-    "httpx~=0.21"
+    "httpx~=0.21",
+    "pydantic~=1.8",
+    "fastapi==0.68",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]

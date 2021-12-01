@@ -1,10 +1,8 @@
+from fastapi import FastAPI, Depends, Body, HTTPException
 from typing import Optional
-from fastapi import FastAPI
 import hashlib
 import base64
-from pydantic import HttpUrl
 from pydantic import BaseModel
-from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from cryptography.fernet import Fernet
 import httpx
@@ -48,7 +46,7 @@ async def signup(body: dict = Body(...)):
     }
     
     async with httpx.AsyncClient() as client:
-        await client.post("http://localhost:5005/events", json=event)
+        await client.post("http://event_bus:5005/events", json=event)
 
     return event
 

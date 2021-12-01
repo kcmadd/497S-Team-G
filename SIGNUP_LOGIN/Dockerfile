@@ -3,6 +3,8 @@ FROM python
 
 # Install PDM
 RUN pip install pdm
+RUN pip install fastapi
+RUN pip install pydantic
 
 # Create the directory inside the container for the app
 WORKDIR /usr/src/app
