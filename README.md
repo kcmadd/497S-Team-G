@@ -3,5 +3,6 @@
 
 #### Start the Docker Service
 
-docker-compose build
-docker-compose up
+* docker-compose build
+
+* docker-compose up
