@@ -41,7 +41,7 @@ class User(BaseModel):
     name: str
     phone_number: str
 print("reach")
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://mongodb-service:27017')
+client = motor.motor_asyncio.AsyncIOMotorClient(host=["mongodb-service0:27017", "mongodb-service1:27017", "mongodb-service2:27017"], replicaset='rs0', ReadPreference='primaryPreferred', maxStalenessSeconds=120)
 username = os.getenv("ME_username")
 password = os.getenv("ME_password")
 #client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:example@mongo:27017/")
