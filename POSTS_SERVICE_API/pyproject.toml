@@ -12,6 +12,7 @@ dependencies = [
     "uvicorn~=0.15",
     "fastapi~=0.70",
     "aiohttp~=3.8",
+    "redis~=4.0",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
