@@ -63,7 +63,10 @@ services:
         expose:
         - "27017"
         entrypoint: [ "/usr/bin/mongod", "--replSet", "rs0", "--bind_ip_all" ]
-    
+  redis-service:
+    image: redis
+    ports: 
+      - "6379:6379"
 volumes:
     mongodata1: null
     mongodata2: null
